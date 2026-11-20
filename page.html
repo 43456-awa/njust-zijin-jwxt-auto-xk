@@ -1,0 +1,276 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>教务抢课助手</title>
+<style>
+:root{--paper:#f7f3ea;--card:#fffdf8;--ink:#2b2622;--soft:#7a7066;--line:#e2d9c9;--seal:#b23a26;--seal-d:#8a2e1e;--ok:#2f7d4f;--warn:#a8691a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.65 system-ui,"Microsoft YaHei",sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:22px 18px 40px}
+h1{font-size:19px;margin:0;letter-spacing:.5px}
+.head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.seal{width:34px;height:34px;border-radius:8px;background:var(--seal);color:#fff;display:grid;place-items:center;font-weight:700;font-size:17px}
+.pill{margin-left:auto;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:#bbb}
+.dot.on{background:var(--ok);box-shadow:0 0 0 3px #2f7d4f22;animation:pulse 1.6s infinite}
+.dot.warn{background:var(--warn);animation:pulse 1.6s infinite}
+.dot.err{background:var(--seal)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.grid{display:grid;grid-template-columns:360px 1fr;gap:16px}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 1px 2px #00000008}
+.card h2{font-size:13px;margin:0 0 12px;color:var(--soft);font-weight:600;letter-spacing:.6px}
+label{display:block;font-size:12px;color:var(--soft);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff;font:inherit;color:inherit}
+input:focus,select:focus,textarea:focus{outline:2px solid #b23a2633;border-color:var(--seal)}
+.radios{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.radios label{margin:0;display:flex;align-items:center;gap:6px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13px;color:var(--ink);cursor:pointer}
+.radios input{width:auto}
+.radios label.sel{border-color:var(--seal);background:#b23a260f;color:var(--seal-d);font-weight:600}
+.btn{width:100%;margin-top:14px;padding:11px;border:0;border-radius:9px;background:var(--seal);color:#fff;font:600 15px/1 inherit;cursor:pointer}
+.btn:hover{background:var(--seal-d)}
+.btn.ghost{background:#fff;color:var(--seal-d);border:1px solid var(--seal)}
+.btn.sm{width:auto;display:inline-block;padding:8px 14px;margin:0;font-size:13px}
+.scanbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{border:0;background:#fff;padding:8px 12px;font:inherit;font-size:13px;color:var(--soft);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--seal);color:#fff;font-weight:600}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hint{font-size:12px;color:var(--soft);margin-top:10px;line-height:1.6}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;color:var(--soft);font-weight:600;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 8px;border-bottom:1px solid #efe9dd;white-space:nowrap}
+.tbl td:nth-child(2){white-space:normal;min-width:120px}
+.tbl th:nth-child(5),.tbl td:nth-child(5){text-align:right}
+.tbl td:first-child{font-size:12.5px}
+.tbl tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px}
+.tag.ok{background:#2f7d4f1a;color:var(--ok)}
+.tag.no{background:#b23a2612;color:var(--seal-d)}
+.tag.g{background:#7a706614;color:var(--soft)}
+.log{margin-top:6px;height:230px;overflow:auto;background:#1f1c19;color:#d9d2c6;border-radius:9px;padding:10px 12px;font:12px/1.7 ui-monospace,Consolas,monospace;white-space:pre-wrap}
+.mono{font-family:ui-monospace,Consolas,monospace}
+.node{font-size:12px;color:var(--soft);margin-top:8px;line-height:1.6}
+.cap{display:none;margin:10px 0;padding:12px;border:1px dashed var(--seal);border-radius:9px;background:#b23a2608}
+.cap img{height:52px;image-rendering:pixelated;vertical-align:middle;background:#fff;border:1px solid var(--line);border-radius:4px}
+.cap input{width:130px;display:inline-block;margin-left:8px}
+.cap button{width:auto;display:inline-block;padding:8px 14px;margin:0 0 0 6px}
+</style></head><body><div class="wrap">
+<div class="head"><div class="seal">教</div><h1>教务抢课助手 <span style="color:#7a7066;font-weight:400;font-size:13px">本地版</span></h1>
+  <div class="pill"><span class="dot" id="dot"></span><span id="phase">未开始</span><span id="round" style="color:#7a7066"></span></div></div>
+
+<div class="grid">
+  <div class="card"><h2>设置</h2>
+    <label>学号</label><input id="user" placeholder="请输入你的学号">
+    <label>教务密码（只存本机，不是 VPN 密码）</label><input id="pass" type="password" placeholder="教务系统密码">
+    <label>选课分类（可多选）</label>
+    <div class="radios" id="catBox">
+      <label data-v="3"><input type="checkbox" value="3" checked>校任选课</label>
+      <label data-v="4"><input type="checkbox" value="4">系任选课</label>
+      <label data-v="5"><input type="checkbox" value="5">自由选择</label>
+      <label data-v="14"><input type="checkbox" value="14">重修课程</label>
+    </div>
+    <div class="hint">目前只有「校任选课」有课；自由选择/重修学校已关闭（选了会提示）</div>
+    <label>怎么选课</label>
+    <div class="radios" id="howBox">
+      <label data-v="course"><input type="radio" name="how" value="course">1 · 指定课程</label>
+      <label data-v="filter"><input type="radio" name="how" value="filter">2 · 类别 + 老师</label>
+    </div>
+    <div id="boxCourse"><label>要抢的课（最多 5 个，上面的优先）</label>
+      <textarea id="cands" rows="4" placeholder="填入课程号 或 课程名，二选一"></textarea>
+      <div class="hint"><b>每行只填一个东西</b>：<b>课程号</b>（如 99001731）<b>或者</b> <b>课程名</b>（如 现代科技），<b>不用两个都填</b>。<br>
+      也可以直接在上面「扫一次课」里勾选。一个都不填 = 自动改成按「类别 + 老师」选。</div></div>
+    <div id="boxFilter" style="display:none">
+      <label>老师关键字（留空 = 不限）</label><input id="teacher" placeholder="例如 紫金慕课">
+      <label>类别（留空 = 不限）</label>
+      <select id="group"><option value="">不限类别</option>
+        <option>经济与社会类</option><option>自然与科学类</option><option>人文与艺术类</option><option>创新与技能类</option></select>
+    </div>
+    <label>模式</label>
+    <div class="radios" id="modeBox">
+      <label data-v="watch"><input type="radio" name="mode" value="watch">只提醒（不提交）</label>
+      <label data-v="auto"><input type="radio" name="mode" value="auto">自动抢（真提交）</label>
+    </div>
+    <label>轮询间隔（秒，最小 3）</label><input id="interval" type="number" min="3" max="60" value="3">
+    <button class="btn" id="start">开始盯课</button>
+    <button class="btn ghost" id="stop" style="margin-top:8px" disabled>停止</button>
+    <div class="hint">提前开好挂着就行：选课没开放 / 网络不通都会一直等，不会退出。<br>只提醒模式发现余量会弹窗+响铃，你自己去教务点。</div>
+  </div>
+
+  <div>
+  <div class="card"><h2>扫课 / 按余量抢</h2>
+    <div class="scanbar">
+      <button class="btn sm" id="scanBtn">扫一次课</button>
+      <button class="btn sm ghost" id="clearSelBtn">清空勾选</button>
+      <button class="btn sm" id="grabSelBtn" disabled>开始抢勾选的课</button>
+      <div class="seg" id="scanSeg">
+        <button type="button" data-v="avail" class="on">只看有余量</button>
+        <button type="button" data-v="all">全部</button>
+      </div>
+    </div>
+    <div class="hint" id="scanInfo" style="margin-top:10px">点「扫一次课」把全部课程列出来；<b>有余量的课可以勾选</b>，勾好后点「开始抢勾选的课」。</div>
+    <div style="max-height:320px;overflow:auto;margin-top:10px">
+      <table class="tbl"><thead><tr><th style="width:36px">选</th><th>课程号_课序号</th><th>课程名</th><th>分类</th><th>课组</th><th>教师</th><th>余量</th><th>状态</th></tr></thead><tbody id="scanTb"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px"><h2>实时状态</h2>
+    <div id="capBox" class="cap">验证码需要手动输入：<img id="capImg" alt="">
+      <input id="capCode" placeholder="4 位验证码">
+      <button class="btn" onclick="sendCap()">提交</button></div>
+    <table class="tbl"><thead><tr><th>课程号_课序号</th><th>课程名</th><th>分类</th><th>课组</th><th>教师</th><th>余量</th><th>状态</th></tr></thead><tbody id="tb"></tbody></table>
+    <div class="node" id="node"></div>
+    <h2 style="margin-top:14px">运行日志</h2>
+    <div class="log" id="log"></div>
+  </div>
+  </div>
+</div></div>
+<script>
+var S={};
+function $(id){return document.getElementById(id);}
+var CATN={'1':'计划','2':'方案','3':'校任选','4':'系任选','5':'自由选择','14':'重修'};
+var PHASE={idle:'未开始',starting:'启动中',login:'登录中',waiting:'等待选课开放',watching:'盯课中',submitting:'提交中',grabbed:'已抢到',"need-captcha":'需要输入验证码',error:'出错了'};
+function phaseText(p){return PHASE[p]||p||'未开始';}
+function sel(){document.querySelectorAll('#howBox label,#modeBox label,#catBox label').forEach(function(l){l.classList.toggle('sel',l.querySelector('input').checked);});}
+function toggleHow(){
+  var v=document.querySelector('input[name=how]:checked'); v=v?v.value:'course';
+  $('boxCourse').style.display=v==='course'?'':'none';
+  $('boxFilter').style.display=v==='filter'?'':'none'; sel();
+}
+function sync(cfg){
+  $('user').value=cfg.user||''; if(cfg.pass)$('pass').value=cfg.pass;
+  $('cands').value=(cfg.candidates||[]).join('\n');
+  $('teacher').value=cfg.teacher||''; $('group').value=cfg.group||'';
+  $('interval').value=cfg.interval||3;
+  var how=((cfg.teacher||cfg.group)&&!(cfg.candidates||[]).length)?'filter':'course';
+  var r=document.querySelector('input[name=how][value='+how+']'); if(r)r.checked=true;
+  var m=document.querySelector('input[name=mode][value='+(cfg.mode||'watch')+']'); if(m)m.checked=true;
+  picked={}; (cfg.candidates||[]).forEach(function(c){ c=String(c); if(/^\d{8,10}_\d+$/.test(c)) picked[c]=1; });
+  var ts=(cfg.types&&cfg.types.length)?cfg.types.map(String):['3'];
+  document.querySelectorAll('#catBox input').forEach(function(e){ e.checked=ts.indexOf(e.value)>=0; });
+  toggleHow();
+}
+function collect(){
+  var how=(document.querySelector('input[name=how]:checked')||{}).value||'course';
+  var cands=$('cands').value.split('\n').map(function(s){return s.trim();}).filter(Boolean).slice(0,5);
+  return {
+    user:$('user').value.trim(), pass:$('pass').value,
+    candidates: how==='course'?cands:[],
+    teacher: how==='filter'?$('teacher').value.trim():'',
+    group: how==='filter'?$('group').value:'',
+    types:(function(){var a=Array.prototype.slice.call(document.querySelectorAll('#catBox input:checked')).map(function(e){return e.value;});return a.length?a:['3'];})(),
+    mode:(document.querySelector('input[name=mode]:checked')||{}).value||'watch',
+    interval:Math.max(3,Number($('interval').value)||3)
+  };
+}
+function save(){
+  return fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(collect())})
+    .then(function(r){return r.json();}).then(function(j){ if(!j.ok) alert(j.error||'保存失败'); return j; });
+}
+function start(){ save().then(function(j){ if(!j.ok)return; fetch('/api/start',{method:'POST'}).then(poll); }); }
+function stop(){ fetch('/api/stop',{method:'POST'}).then(poll); }
+function sendCap(){
+  fetch('/api/captcha',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:$('capCode').value.trim()})})
+    .then(function(){$('capCode').value='';});
+}
+function render(){
+  var p=S.phase||'idle';
+  $('phase').textContent=phaseText(p);
+  $('dot').className='dot'+((p==='watching'||p==='submitting')?' on':(p==='waiting'||p==='need-captcha')?' warn':(p==='error'||p==='grabbed')?' err':'');
+  $('round').textContent=S.running?('第 '+S.round+' 轮 · '+Math.floor((Date.now()-(S.startedAt||Date.now()))/60000)+' 分'):'';
+  $('start').disabled=!!S.running; $('stop').disabled=!S.running;
+  var cap=(S.captured||[]).map(function(c){return c.host+':'+(c.ok?c.ms+'ms':'不通');}).join(' / ');
+  $('node').textContent=S.node?('节点 '+S.node+(cap?'　'+cap:'')):'';
+  $('capBox').style.display=S.needCaptcha?'block':'none';
+  if(S.needCaptcha){ var im=$('capImg'); if(im.getAttribute('data-t')!==String(S.round)){ im.setAttribute('data-t',String(S.round)); im.src='/api/captcha?t='+Date.now(); } }
+  var list=(S.matched&&S.matched.length)?S.matched:(S.rows||[]).slice(0,30);
+  $('tb').innerHTML=list.map(function(r){
+    return '<tr><td class=mono>'+r.kch+'_'+r.kxh+'</td><td>'+(r.kcm||'')+'</td><td><span class="tag g">'+(CATN[r.cat]||'-')+'</span></td><td><span class="tag g">'+(r.group||'-')+'</span></td><td>'+(r.js||'')+'</td><td class=mono>'+r.left+'</td><td><span class="tag '+(r.can?'ok':'no')+'">'+(r.can?'可抢':'已满')+'</span></td></tr>';
+  }).join('')||'<tr><td colspan=7 style="color:#7a7066">还没有数据</td></tr>';
+  renderScan();
+  var lg=$('log'); var atBottom=lg.scrollTop+lg.clientHeight>=lg.scrollHeight-30;
+  lg.textContent=(S.logs||[]).slice(-120).join('\n');
+  if(atBottom) lg.scrollTop=lg.scrollHeight;
+}
+var picked={};
+function renderScan(){
+  var all=(S.scanRows&&S.scanRows.length)?S.scanRows:(S.rows||[]);
+  var onlyAvail=(window.scanView||'avail')==='avail';
+  var rows=all.slice();
+  if(onlyAvail) rows=rows.filter(function(r){return r.can;});
+  rows.sort(function(a,b){ return (b.can-a.can)||(b.left-a.left); });
+  var canN=rows.filter(function(r){return r.can;}).length;
+  var selN=Object.keys(picked).length;
+  var segN=all.filter(function(r){return r.can;}).length;
+  var segBtns=document.querySelectorAll('#scanSeg button');
+  if(segBtns.length){ segBtns[0].textContent='只看有余量（'+segN+'）'; segBtns[1].textContent='全部（'+all.length+'）';
+    segBtns[0].className=(onlyAvail?'on':''); segBtns[1].className=(onlyAvail?'':'on'); }
+  $('scanInfo').innerHTML=all.length
+    ? ('共 <b>'+all.length+'</b> 门，其中<b>有余量 '+canN+'</b> 门'+(onlyAvail?'（下面只列这些，点「全部」看其他 '+(all.length-canN)+' 门）':'')+'，已勾选 <b>'+selN+'</b> 门')
+    : '点「扫一次课」把全部课程列出来；<b>有余量的课可以勾选</b>，勾好后点「开始抢勾选的课」。';
+  $('scanBtn').disabled=!!S.running||!!window.__scanning;
+  $('grabSelBtn').disabled=!!S.running||selN===0;
+  $('grabSelBtn').textContent='开始抢勾选的课'+(selN?('（'+selN+'）'):'');
+  $('scanTb').innerHTML=rows.map(function(r){
+    var cb='<input type="checkbox" data-key="'+r.key+'"'+(picked[r.key]?' checked':'')+(r.can?'':' disabled')+'>';
+    return '<tr><td>'+cb+'</td><td class=mono>'+r.kch+'_'+r.kxh+'</td><td>'+(r.kcm||'')+'</td><td><span class="tag g">'+(CATN[r.cat]||'-')+'</span></td><td><span class="tag g">'+(r.group||'-')+'</span></td><td>'+(r.js||'')+'</td><td class=mono>'+r.left+'</td><td><span class="tag '+(r.can?'ok':'no')+'">'+(r.can?'有余额':'已满')+'</span></td></tr>';
+  }).join('')||('<tr><td colspan=8 style="color:#7a7066">'+(all.length?('没有有余量的课（都满了）—— 取消上面的「只看有余量」可以看全部 '+all.length+' 门'):'还没扫过，点上面「扫一次课」')+'</td></tr>');
+}
+function scanNow(){
+  if(window.__scanning) return;
+  if(S.running){ alert('正在盯课，先点「停止」再扫课'); return; }
+  if(!$('user').value.trim()||!$('pass').value){ alert('先填学号和密码'); return; }
+  window.__scanning=1; $('scanBtn').textContent='扫课中…'; renderScan();
+  save().then(function(j){
+    if(!j.ok){ window.__scanning=0; $('scanBtn').textContent='扫一次课'; renderScan(); return; }
+    fetch('/api/scan',{method:'POST'}).then(function(r){return r.json();}).then(function(j2){
+      window.__scanning=0; $('scanBtn').textContent='扫一次课';
+      if(!j2.ok){ alert(j2.error||'扫课失败'); renderScan(); return; }
+      S.scanRows=j2.rows||[]; renderScan(); poll();
+    }).catch(function(e){ window.__scanning=0; $('scanBtn').textContent='扫一次课'; alert('扫课失败：'+e); renderScan(); });
+  });
+}
+function grabSel(){
+  var keys=Object.keys(picked);
+  if(!keys.length){ alert('先在列表里勾选有余量的课'); return; }
+  if(!confirm('将以【自动抢】模式提交这 '+keys.length+' 门课：\n\n'+keys.join('\n')+'\n\n抢到后请尽快去教务确认。确定开始吗？')) return;
+  var cfg=collect(); cfg.candidates=keys; cfg.mode='auto';
+  var ra=document.querySelector('input[name=mode][value=auto]'); if(ra){ ra.checked=true; sel(); }
+  fetch('/api/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cfg)})
+    .then(function(r){return r.json();}).then(function(j){
+      if(!j.ok){ alert(j.error||'保存失败'); return; }
+      return fetch('/api/start',{method:'POST'}).then(poll);
+    });
+}
+function poll(){
+  fetch('/api/state').then(function(r){return r.json();}).then(function(j){
+    S=j; if(!window.__synced&&S.cfg){sync(S.cfg);window.__synced=1;} render();
+  }).catch(function(){});
+}
+document.addEventListener('change',function(e){
+  if(e.target.name==='how') toggleHow();
+  if(e.target.name==='mode') sel();
+  if(e.target.closest('#catBox')) sel();
+});
+document.addEventListener('click',function(e){
+  var l=e.target.closest('#howBox label,#modeBox label'); if(l){setTimeout(function(){ if(l.querySelector('input').name==='how')toggleHow(); else sel(); },0);}
+});
+$('start').onclick=start; $('stop').onclick=stop;
+$('scanBtn').onclick=scanNow; $('grabSelBtn').onclick=grabSel;
+$('clearSelBtn').onclick=function(){ picked={}; renderScan(); };
+try{ window.scanView=localStorage.getItem('scanView')||'avail'; }catch(e){ window.scanView='avail'; }
+document.addEventListener('click',function(e){
+  var b=e.target.closest('#scanSeg button'); if(!b) return;
+  window.scanView=b.getAttribute('data-v');
+  try{ localStorage.setItem('scanView', window.scanView); }catch(e){}
+  renderScan();
+});
+document.addEventListener('change',function(e){
+  if(e.target.type==='checkbox'&&e.target.getAttribute('data-key')){
+    var k=e.target.getAttribute('data-key');
+    if(e.target.checked) picked[k]=1; else delete picked[k];
+    renderScan();
+  }
+});
+$('capCode').addEventListener('keydown',function(e){ if(e.key==='Enter') sendCap(); });
+poll(); setInterval(poll,1000);
+</script></body></html>

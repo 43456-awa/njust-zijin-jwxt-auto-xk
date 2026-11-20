@@ -1,0 +1,24 @@
+{
+  "name": "zj-jwxt-auto-xk",
+  "version": "1.0.0",
+  "description": "南理工紫金学院 URP 教务系统自动抢课助手（命令行 / 交互向导 / 本地网页）",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "login": "node xk.mjs login",
+    "menu": "node xk.mjs menu",
+    "speed": "node xk.mjs speed",
+    "grab": "node xkg.mjs",
+    "web": "node xkw.mjs"
+  },
+  "dependencies": {
+    "jpeg-js": "^0.4.4",
+    "onnxruntime-web": "^1.30.0"
+  },
+  "bin": {
+    "xk": "xk.mjs"
+  }
+}

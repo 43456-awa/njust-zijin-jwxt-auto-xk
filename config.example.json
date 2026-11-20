@@ -1,0 +1,21 @@
+{
+  "user": "2415xxxxxx",
+  "pass": "",
+  "rememberPass": false,
+  "candidates": [
+    "99001731",
+    "名画中的瘟疫史"
+  ],
+  "group": "",
+  "teacher": "",
+  "type": "3",
+  "interval": 3,
+  "mode": "watch",
+  "hosts": [
+    "jw.example.edu",
+    "jw2.example.edu",
+    "jw3.example.edu"
+  ],
+  "autoHost": true,
+  "ocrUrl": ""
+}

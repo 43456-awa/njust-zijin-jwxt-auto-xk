@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+config.json
+.urp-cookies.json
+xk.log
+*.log
+dist/
+dist-web/
+*.exe
+*.zip
+.DS_Store
+Thumbs.db
