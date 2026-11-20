@@ -22,7 +22,7 @@ const MIN_INTERVAL = 3;
 const DEFAULTS = {
   user: '', pass: '', candidates: [], group: '', teacher: '',
   types: ['3'], type: '3', interval: 3, mode: 'watch', autoHost: true,
-  hosts: ['jw.example.edu', 'jw2.example.edu', 'jw3.example.edu'],
+  hosts: ['192.168.16.207', '192.168.16.208', '192.168.16.209'],
 };
 const CATNAME = { '1': '计划课程', '2': '方案课程', '3': '校任选课', '4': '系任选课', '5': '自由选择', '14': '重修课程' };
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -41,7 +41,7 @@ const saveCfg = c => { try { fs.writeFileSync(CFG, JSON.stringify(c, null, 2)); 
 let ocrReady = false, stopFlag = false, captchaResolver = null, lastCaptchaBuf = null;
 
 // ---------------- 网络 ----------------
-let BASE = 'http://jw.example.edu/';
+let BASE = 'http://192.168.16.207/';
 let jar = new Map();
 const ck = () => [...jar].map(([k, v]) => k + '=' + v).join('; ');
 const store = r => {

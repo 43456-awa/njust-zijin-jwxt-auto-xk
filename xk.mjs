@@ -16,7 +16,7 @@
  *
  * 凭据（不要写在命令行历史里）：
  *   export URP_USER=学号 URP_PASS=密码
- *   export URP_BASE=http://jw.example.edu     # 默认
+ *   export URP_BASE=http://192.168.16.207     # 默认
  *   export OCR_URL=http://127.0.0.1:5003/ocr  # 若本机没有 OCR，用 ssh -L 5003:127.0.0.1:5003 your-ocr-host 转发
  */
 import fs from 'node:fs';
@@ -34,7 +34,7 @@ try {
 
 let BASE = (() => {
   try { const h = fs.readFileSync(path.resolve('.urp-host'), 'utf8').trim(); if (h) return h; } catch {}
-  return (process.env.URP_BASE || 'http://jw.example.edu').replace(/\/+$/, '') + '/';
+  return (process.env.URP_BASE || 'http://192.168.16.207').replace(/\/+$/, '') + '/';
 })();
 const OCR = process.env.OCR_URL || 'http://127.0.0.1:5003/ocr';
 const USER = process.env.URP_USER || '';
@@ -366,7 +366,7 @@ async function attemptCourse(c, type) {
 }
 
 async function cmdSpeed() {
-  const hosts = (opt('hosts', 'jw.example.edu,jw2.example.edu,jw3.example.edu')).split(',').map(s => s.trim()).filter(Boolean);
+  const hosts = (opt('hosts', '192.168.16.207,192.168.16.208,192.168.16.209')).split(',').map(s => s.trim()).filter(Boolean);
   console.log('=== 教务 IP 测速（顺序逐个，不并发、不登录 → 不会互踢会话）===');
   const res = await probeHosts(hosts);
   printHostTable(res);
@@ -389,7 +389,7 @@ async function cmdGrab() {
   }
   // 0) 顺序测速选最快节点（不并发、不登录 → 不会互踢会话）
   if (flag('auto-host')) {
-    const hosts = (opt('hosts', 'jw.example.edu,jw2.example.edu,jw3.example.edu')).split(',').map(s => s.trim()).filter(Boolean);
+    const hosts = (opt('hosts', '192.168.16.207,192.168.16.208,192.168.16.209')).split(',').map(s => s.trim()).filter(Boolean);
     console.log('=== 教务 IP 测速（顺序逐个，不并发、不登录）===');
     const res = await probeHosts(hosts);
     printHostTable(res);

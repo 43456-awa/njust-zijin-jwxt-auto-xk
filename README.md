@@ -32,19 +32,20 @@ npm install
 
 ## 配置教务地址
 
-仓库里的地址一律写成占位符 `jw.example.edu`，**跑之前换成你校真实的教务地址**：
+默认地址已经内置（校内教务 URP，三个节点）：
+`http://192.168.16.207` / `192.168.16.208` / `192.168.16.209`
+在校内网 / 校园网下直连即可，不需要 VPN。地址变了就用环境变量或参数覆盖：
 
 ```bash
-# 方式一：环境变量（推荐）
-export URP_BASE=http://jw.example.edu      # 换成你的
 export URP_USER=你的学号
 export URP_PASS=你的教务密码
+export URP_BASE=http://192.168.16.207     # 需要时覆盖
 
-# 方式二：命令行参数
-node xk.mjs grab --course 现代科技1 --base http://jw.example.edu --live
+# 或命令行参数
+node xk.mjs grab --course 现代科技1 --base http://192.168.16.207 --live
 ```
 
-> 学校如果有多个教务节点（实测有的学校 3 个 IP 共享同一账号状态，同时登录会互踢），用 `--hosts a,b,c` 或 `--auto-host` 先测速再选。**绝不要并发登录**。
+> 三个节点**共享同一账号状态**（实测同时登录会互踢），用 `--hosts a,b,c` 或 `--auto-host` 先测速再选；**绝不要并发登录**。
 
 ## 用法
 

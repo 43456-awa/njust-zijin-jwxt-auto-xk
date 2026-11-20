@@ -12,9 +12,9 @@
   "interval": 3,
   "mode": "watch",
   "hosts": [
-    "jw.example.edu",
-    "jw2.example.edu",
-    "jw3.example.edu"
+    "192.168.16.207",
+    "192.168.16.208",
+    "192.168.16.209"
   ],
   "autoHost": true,
   "ocrUrl": ""

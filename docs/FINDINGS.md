@@ -1,7 +1,7 @@
 # URP 选课接口实测记录（2026-10-21）
 
 账号：你的学号（示例；方案号因人而异）
-入口：`http://jw.example.edu/`（本机在内网，直连即可，无需 VPN）
+入口：`http://192.168.16.207/`（本机在内网，直连即可，无需 VPN）
 
 ## 登录
 
@@ -48,7 +48,7 @@
    ```
    POST /xkAction.do
    Content-Type: application/x-www-form-urlencoded
-   Referer: http://jw.example.edu/xkAction.do
+   Referer: http://192.168.16.207/xkAction.do
 
    preActionType=3&actionType=9&kcId=<课程号>_<课序号>
    ```
@@ -123,10 +123,10 @@
 ## 真实提交请求（浏览器抓包 + 直连复现双重验证）
 
 ```
-POST http://jw.example.edu/xkAction.do
+POST http://192.168.16.207/xkAction.do
 Content-Type: application/x-www-form-urlencoded
-Origin: http://jw.example.edu                      ← ★必须带！否则 500 或被静默忽略
-Referer: http://jw.example.edu/xkAction.do?actionType=3&pageNumber=-1
+Origin: http://192.168.16.207                      ← ★必须带！否则 500 或被静默忽略
+Referer: http://192.168.16.207/xkAction.do?actionType=3&pageNumber=-1
 Cookie: JSESSIONID=...; route=...
 
 kcId=99033611_01&preActionType=3&actionType=9
@@ -201,7 +201,7 @@ node xk.mjs grab --course 99001731 --type 3 --live
 
 ## 提交成功的完整条件（缺一不可）
 
-1. `Origin: http://jw.example.edu`
+1. `Origin: http://192.168.16.207`
 2. `Referer` 必须**带上该课所在页**：`.../xkAction.do?actionType=3&pageNumber=<该课所在页>`
 3. 提交前**先 GET 那个列表页**，让服务端"当前页"= 该课所在页（否则静默重渲染、不处理）
 4. body：`kcId=<课程号>_<课序号>&preActionType=<类别>&actionType=9`
@@ -219,9 +219,9 @@ node xk.mjs grab --course 99001731 --type 3 --live
 
 | IP | 测速（最快/平均） |
 |---|---|
-| jw3.example.edu | 20ms / 27ms |
-| jw2.example.edu | 33ms / 35ms（另一次 23/28） |
-| jw.example.edu | 31–41ms / 43–59ms |
+| 192.168.16.209 | 20ms / 27ms |
+| 192.168.16.208 | 33ms / 35ms（另一次 23/28） |
+| 192.168.16.207 | 31–41ms / 43–59ms |
 
 - 三个节点**共享同一账号状态**（用户确认：同时登录会互踢）→ **绝不能并发登录**。
 - 测速**只用 GET 登录页、不登录**，因此对会话零影响；顺序执行，不并发。

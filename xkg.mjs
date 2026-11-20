@@ -52,7 +52,7 @@ const DEFAULT_CFG = {
   type: '3',
   interval: 3,
   mode: 'watch',
-  hosts: ['jw.example.edu', 'jw2.example.edu', 'jw3.example.edu'],
+  hosts: ['192.168.16.207', '192.168.16.208', '192.168.16.209'],
   autoHost: true,
   ocrUrl: '',
 };
@@ -181,7 +181,7 @@ function notify(title, msg) {
 }
 
 // ---------------- 网络层 ----------------
-let BASE = 'http://jw.example.edu/';
+let BASE = 'http://192.168.16.207/';
 let jar = new Map();
 const ck = () => [...jar].map(([k, v]) => k + '=' + v).join('; ');
 const store = r => {
